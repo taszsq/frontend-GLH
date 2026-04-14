@@ -1,69 +1,101 @@
-<DOCTYPE html>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Greenfield Local Hub</title>
 
-    <html>
-        <head>
-            <title>Greenfield Local Hub</title>
+    <style>
+        body{
+            margin:0;
+            font-family:arial;
+            display:flex;
+        }
 
-            <style>
-                body{
-                    margin:0% ; 
-                    font-family:arial;
-                    display:flex;
-                }
-                .sidebar{
-                    width: 200px;
-                    background: #eee;
-                    padding: 20px;
-                    height: 100vh;
-            
-            
-                }   
-                .sidebar p{
-                    margin:15px 0 ;
-                    cursor:pointer;
-                }
-            
-                .main{
-                    flex:1 ;
-                    padding: 20px;
-            
-                }
-                .hidden{
-                    display: none;
-            
-                }
-                .product-grid{
-                    display:flex ;
-                    gap: 20px;
-            
-                }
-                .card{
-                    background: #ddd;
-                    padding: 15px;
-                    width:150px;
-                    text-align: center;
-                }
-            
-                .image-box{
-                    height: 80px;
-                    background: #bbb;
-                    margin-bottom: 10px;
-                
-                }
-            
-                .footer{
-                    position: fixed;
-                    bottom: 0;
-                    width: 100%;
-                    background: #eee;
-                    text-align: center;
-                    padding: 10px;
-                }
-                
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        object                                                                                                                                                                         }
-            </style>                                         
-        </head>
-        
-    </html>
-</DOCTYPE>
+        .sidebar{
+            width: 200px;
+            background: #eee;
+            padding: 20px;
+            height: 100vh;
+        }
 
+        .sidebar p{
+            margin:15px 0;
+            cursor:pointer;
+        }
+
+        .main{
+            flex:1;
+            padding: 20px;
+        }
+
+        .product-grid{
+            display:flex;
+            gap: 20px;
+        }
+
+        .card{
+            background: #ddd;
+            padding: 15px;
+            width:150px;
+            text-align: center;
+        }
+
+        .image-box{
+            height: 80px;
+            background: #bbb;
+            margin-bottom: 10px;
+        }
+
+        .footer{
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: #eee;
+            text-align: center;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <p onclick="loadProducts()">Products</p>
+    </div>
+
+    <div class="main">
+        <h1>Products</h1>
+        <div id="products" class="product-grid"></div>
+    </div>
+
+    <div class="footer">
+        Greenfield Local Hub
+    </div>
+
+    <script>
+        function loadProducts() {
+            fetch("http://localhost:3000/products")
+                .then(res => res.json())
+                .then(data => {
+                    const container = document.getElementById("products");
+                    container.innerHTML = "";
+
+                    data.forEach(product => {
+                        const card = document.createElement("div");
+                        card.className = "card";
+
+                        card.innerHTML = `
+                            <div class="image-box"></div>
+                            <h3>${product.name}</h3>
+                            <p>£${product.price}</p>
+                            <p>${product.stock}</p>
+                        `;
+
+                        container.appendChild(card);
+                    });
+                })
+                .catch(err => console.log(err));
+        }
+    </script>
+
+</body>
+</html>
