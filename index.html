@@ -58,44 +58,117 @@
 
 <body>
 
+   
     <div class="sidebar">
-        <p onclick="loadProducts()">Products</p>
+        <p onclick="show('home')">Home</p>
+        <p onclick="show('products')">Product</p>
+        <p>Producers</p>
+        <p>Loyalty</p>
+        <p>Login</p>
+        <p>Cart</p>
     </div>
+    
 
     <div class="main">
-        <h1>Products</h1>
-        <div id="products" class="product-grid"></div>
+    
+
+    <div id="home">
+        <h1>Welcome To Greenfield Local Hub</h1>
+        <p>Buy fresh local food and support local farmers</p>
+    
+        <button onclick="show('products')">Browse Products</button>
+    
+        <h3>Featured Products</h3>
+        <div class="product-grid">
+            <div class="card">Image Name Price</div>
+            <div class="card">Image Name Price</div>
+            <div class="card">Image Name Price</div>
+        </div>
+    
+        <h3>About Our Producers</h3>
+        <button>View Producers</button>
     </div>
+    
+
+    <div id="products" class="hidden">
+    
+        <input id="searchBox" placeholder="Search Products">
+        <button onclick="search()">Search</button>
+    
+        <h3>Product List</h3>
+    
+        <div id="productList" class="product-grid"></div>
+    
+        <p id="noResults" class="hidden">No More Results Found</p>
+    
+    </div>
+    
+    </div>
+    
 
     <div class="footer">
-        Greenfield Local Hub
+        Contact Us | Accessibility | Privacy Policy
     </div>
-
+    
     <script>
-        function loadProducts() {
-            fetch("http://localhost:3000/products")
-                .then(res => res.json())
-                .then(data => {
-                    const container = document.getElementById("products");
-                    container.innerHTML = "";
+    
 
-                    data.forEach(product => {
-                        const card = document.createElement("div");
-                        card.className = "card";
-
-                        card.innerHTML = `
-                            <div class="image-box"></div>
-                            <h3>${product.name}</h3>
-                            <p>£${product.price}</p>
-                            <p>${product.stock}</p>
-                        `;
-
-                        container.appendChild(card);
-                    });
-                })
-                .catch(err => console.log(err));
+    let products = [
+        { name: "Apples", price: 3.50, stock: "Available" },
+        { name: "Milk", price: 2.00, stock: "Available" }
+    ];
+    
+    // PAGE SWITCH
+    function show(page) {
+        document.getElementById("home").classList.add("hidden");
+        document.getElementById("products").classList.add("hidden");
+    
+        document.getElementById(page).classList.remove("hidden");
+    
+        if (page === "products") {
+            displayProducts(products);
         }
-    </script>
+    }
+    
 
-</body>
-</html>
+    function displayProducts(list) {
+        let output = "";
+    
+        if (list.length === 0) {
+            document.getElementById("noResults").classList.remove("hidden");
+            document.getElementById("productList").innerHTML = "";
+            return;
+        }
+    
+        document.getElementById("noResults").classList.add("hidden");
+    
+        list.forEach(p => {
+            output += `
+            <div class="card">
+                <div class="image-box"></div>
+                <p>${p.name}</p>
+                <p>Price: £${p.price}</p>
+                <p>Stock: ${p.stock}</p>
+                <button>Add to Cart</button>
+            </div>
+            `;
+        });
+    
+        document.getElementById("productList").innerHTML = output;
+    }
+    
+ 
+    function search() {
+        let query = document.getElementById("searchBox").value.toLowerCase();
+    
+        let filtered = products.filter(p =>
+            p.name.toLowerCase().includes(query)
+        );
+    
+        displayProducts(filtered);
+    }
+    
+    </script>
+    
+    </body>
+    </html>
