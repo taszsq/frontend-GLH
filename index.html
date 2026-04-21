@@ -80,56 +80,48 @@
     <div class="sidebar">
         <p onclick="show('home')">Home</p>
         <p onclick="show('products')">Product</p>
-        <p onclick="show('dashboard')">Dashboard</p> <!-- Added Dashboard link -->
-        <p>Loyalty</p>
-        <p>Login</p>
-        <p>Cart</p>
+        <p onclick="show('dashboard')">Dashboard</p>
+        <p onclick="show('login')">Login</p> <!-- Added Login link -->
+        <p onclick="show('cart')">Cart</p> <!-- Added Cart link -->
     </div>
 
     <div class="main">
 
+        <!-- Home Section -->
         <div id="home">
             <h1>Welcome To Greenfield Local Hub</h1>
             <p>Buy fresh local food and support local farmers</p>
             <button onclick="show('products')">Browse Products</button>
-            <h3>Featured Products</h3>
-            <div class="product-grid">
-                <div class="card">Image </div>
-                <div class="card">Image </div>
-                <div class="card">Image</div>
-            </div>
-            <h3>About Our Producers</h3>
-            <button>View Producers</button>
         </div>
 
+        <!-- Products Section -->
         <div id="products" class="hidden">
-            <input id="searchBox" placeholder="Search Products">
-            <button onclick="search()">Search</button>
             <h3>Product List</h3>
             <div id="productList" class="product-grid"></div>
-            <p id="noResults" class="hidden">No More Results Found</p>
         </div>
 
         <!-- Dashboard Section -->
         <div id="dashboard" class="hidden">
             <h1>Producer Dashboard</h1>
             <p>Manage stock levels, update product details, and view orders.</p>
+        </div>
 
-            <!-- Manage Stock -->
-            <h3>Manage Stock</h3>
-            <div id="stockList" class="product-grid"></div>
-
-            <!-- Add New Product -->
-            <h3>Add New Product</h3>
-            <form id="addProductForm">
-                <input type="text" id="newProductName" placeholder="Product Name" required>
-                <input type="number" id="newProductPrice" placeholder="Price (£)" required>
-                <select id="newProductStock">
-                    <option value="Available">Available</option>
-                    <option value="Unavailable">Unavailable</option>
-                </select>
-                <button type="button" onclick="addProduct()">Add Product</button>
+        <!-- Login Section -->
+        <div id="login" class="hidden">
+            <h1>Login</h1>
+            <form id="loginForm">
+                <input type="text" id="username" placeholder="Username" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button type="button" onclick="login()">Login</button>
             </form>
+            <p id="loginMessage"></p>
+        </div>
+
+        <!-- Cart Section -->
+        <div id="cart" class="hidden">
+            <h1>Your Cart</h1>
+            <div id="cartList" class="product-grid"></div>
+            <h3>Total: £<span id="cartTotal">0.00</span></h3>
         </div>
 
     </div>
@@ -141,67 +133,83 @@
     <script>
         // Existing products array
         let products = [
-            { name: "Apples", price: 3.50, stock: "Available" },
-            { name: "Milk", price: 2.00, stock: "Available" },
-            { name: "Bananas", price: 2.10, stock: "Available" },
-            { name: "Eggs", price: 2.50, stock: "Unavailable" },
-            { name: "Sourdough Bread", price: 3.10, stock: "Available" },
-            { name: "Raspberries", price: 1.75, stock: "Available" },
-            { name: "Strawberries", price: 2.50, stock: "Available" },
-            { name: "Blueberries", price: 1.95, stock: "Available" },
-            { name: "Tomatoes", price: 2.00, stock: "Available" }
+            { name: "Apples", price: 3.50 },
+            { name: "Milk", price: 2.00 },
+            { name: "Bananas", price: 2.10 }
         ];
+
+        let cart = []; // Cart array
+        let loggedInUser = null; // Logged-in user
 
         // Page switch function
         function show(page) {
-            document.getElementById("home").classList.add("hidden");
-            document.getElementById("products").classList.add("hidden");
-            document.getElementById("dashboard").classList.add("hidden");
-
-            document.getElementById(page).classList.remove("hidden");
+            document.querySelectorAll('.main > div').forEach(div => div.classList.add('hidden'));
+            document.getElementById(page).classList.remove('hidden');
 
             if (page === "products") {
                 displayProducts(products);
-            } else if (page === "dashboard") {
-                displayStock(products);
+            } else if (page === "cart") {
+                displayCart();
             }
         }
 
-        // Display products in the dashboard
-        function displayStock(list) {
+        // Display products
+        function displayProducts(list) {
             let output = "";
             list.forEach((p, index) => {
                 output += `
                 <div class="card">
                     <p>${p.name}</p>
-                    <p>Price: £${p.price}</p>
-                    <p>Stock: ${p.stock}</p>
-                    <button onclick="removeProduct(${index})">Remove</button>
+                    <p>Price: £${p.price.toFixed(2)}</p>
+                    <button onclick="addToCart(${index})">Add to Cart</button>
                 </div>
                 `;
             });
-            document.getElementById("stockList").innerHTML = output;
+            document.getElementById("productList").innerHTML = output;
         }
 
-        // Add a new product
-        function addProduct() {
-            const name = document.getElementById("newProductName").value;
-            const price = parseFloat(document.getElementById("newProductPrice").value);
-            const stock = document.getElementById("newProductStock").value;
+        // Add product to cart
+        function addToCart(index) {
+            cart.push(products[index]);
+            alert(`${products[index].name} added to cart!`);
+        }
 
-            if (name && price) {
-                products.push({ name, price, stock });
-                displayStock(products);
-                document.getElementById("addProductForm").reset();
+        // Display cart
+        function displayCart() {
+            let output = "";
+            let total = 0;
+            cart.forEach((item, index) => {
+                output += `
+                <div class="card">
+                    <p>${item.name}</p>
+                    <p>Price: £${item.price.toFixed(2)}</p>
+                    <button onclick="removeFromCart(${index})">Remove</button>
+                </div>
+                `;
+                total += item.price;
+            });
+            document.getElementById("cartList").innerHTML = output;
+            document.getElementById("cartTotal").innerText = total.toFixed(2);
+        }
+
+        // Remove product from cart
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            displayCart();
+        }
+
+        // Login function
+        function login() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            if (username && password) {
+                loggedInUser = username;
+                document.getElementById("loginMessage").innerText = `Welcome, ${username}!`;
+                document.getElementById("loginForm").reset();
             } else {
-                alert("Please fill in all fields.");
+                alert("Please enter both username and password.");
             }
-        }
-
-        // Remove a product
-        function removeProduct(index) {
-            products.splice(index, 1);
-            displayStock(products);
         }
     </script>
 
