@@ -1,51 +1,60 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>Greenfield Local Hub</title>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body{
-            margin:0;
-            font-family:arial;
-            display:flex;
+        /* Accessibility and Design Enhancements */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            background-color: #f9f9f9; /* Beige background */
         }
 
-        .sidebar{
+        .sidebar {
             width: 200px;
             background: #eee;
             padding: 20px;
             height: 100vh;
         }
 
-        .sidebar p{
-            margin:15px 0;
-            cursor:pointer;
+        .sidebar p {
+            margin: 15px 0;
+            cursor: pointer;
+            color: #006400; /* Green text */
         }
 
-        .main{
-            flex:1;
+        .sidebar p:hover {
+            color: #ff69b4; /* Pink hover effect */
+        }
+
+        .main {
+            flex: 1;
             padding: 20px;
         }
 
-        .product-grid{
-            display:flex;
+        .product-grid {
+            display: flex;
             gap: 20px;
+            flex-wrap: wrap; /* Fill the page more */
         }
 
-        .card{
+        .card {
             background: #ddd;
             padding: 15px;
-            width:150px;
+            width: 150px;
             text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
 
-        .image-box{
-            height: 80px;
-            background: #bbb;
-            margin-bottom: 10px;
+        .card:hover {
+            background: #ffebcd; /* Light beige hover effect */
         }
 
-        .footer{
+        .footer {
             position: fixed;
             bottom: 0;
             width: 100%;
@@ -53,122 +62,150 @@
             text-align: center;
             padding: 10px;
         }
+
+        .hidden {
+            display: none;
+        }
+
+        .dashboard {
+            background: #f0fff0; /* Light green background */
+            padding: 20px;
+            border-radius: 5px;
+        }
     </style>
 </head>
 
 <body>
 
-   
     <div class="sidebar">
         <p onclick="show('home')">Home</p>
         <p onclick="show('products')">Product</p>
-        <p>Producers</p>
+        <p onclick="show('dashboard')">Dashboard</p> <!-- Added Dashboard link -->
         <p>Loyalty</p>
         <p>Login</p>
         <p>Cart</p>
     </div>
-    
 
     <div class="main">
-    
 
-    <div id="home">
-        <h1>Welcome To Greenfield Local Hub</h1>
-        <p>Buy fresh local food and support local farmers</p>
-    
-        <button onclick="show('products')">Browse Products</button>
-    
-        <h3>Featured Products</h3>
-        <div class="product-grid">
-            <div class="card">Image Name Price</div>
-            <div class="card">Image Name Price</div>
-            <div class="card">Image Name Price</div>
+        <div id="home">
+            <h1>Welcome To Greenfield Local Hub</h1>
+            <p>Buy fresh local food and support local farmers</p>
+            <button onclick="show('products')">Browse Products</button>
+            <h3>Featured Products</h3>
+            <div class="product-grid">
+                <div class="card">Image </div>
+                <div class="card">Image </div>
+                <div class="card">Image</div>
+            </div>
+            <h3>About Our Producers</h3>
+            <button>View Producers</button>
         </div>
-    
-        <h3>About Our Producers</h3>
-        <button>View Producers</button>
-    </div>
-    
 
-    <div id="products" class="hidden">
-    
-        <input id="searchBox" placeholder="Search Products">
-        <button onclick="search()">Search</button>
-    
-        <h3>Product List</h3>
-    
-        <div id="productList" class="product-grid"></div>
-    
-        <p id="noResults" class="hidden">No More Results Found</p>
-    
+        <div id="products" class="hidden">
+            <input id="searchBox" placeholder="Search Products">
+            <button onclick="search()">Search</button>
+            <h3>Product List</h3>
+            <div id="productList" class="product-grid"></div>
+            <p id="noResults" class="hidden">No More Results Found</p>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="hidden">
+            <h1>Producer Dashboard</h1>
+            <p>Manage stock levels, update product details, and view orders.</p>
+
+            <!-- Manage Stock -->
+            <h3>Manage Stock</h3>
+            <div id="stockList" class="product-grid"></div>
+
+            <!-- Add New Product -->
+            <h3>Add New Product</h3>
+            <form id="addProductForm">
+                <input type="text" id="newProductName" placeholder="Product Name" required>
+                <input type="number" id="newProductPrice" placeholder="Price (£)" required>
+                <select id="newProductStock">
+                    <option value="Available">Available</option>
+                    <option value="Unavailable">Unavailable</option>
+                </select>
+                <button type="button" onclick="addProduct()">Add Product</button>
+            </form>
+        </div>
+
     </div>
-    
-    </div>
-    
 
     <div class="footer">
         Contact Us | Accessibility | Privacy Policy
     </div>
-    
+
     <script>
-    
+        // Existing products array
+        let products = [
+            { name: "Apples", price: 3.50, stock: "Available" },
+            { name: "Milk", price: 2.00, stock: "Available" },
+            { name: "Bananas", price: 2.10, stock: "Available" },
+            { name: "Eggs", price: 2.50, stock: "Unavailable" },
+            { name: "Sourdough Bread", price: 3.10, stock: "Available" },
+            { name: "Raspberries", price: 1.75, stock: "Available" },
+            { name: "Strawberries", price: 2.50, stock: "Available" },
+            { name: "Blueberries", price: 1.95, stock: "Available" },
+            { name: "Tomatoes", price: 2.00, stock: "Available" }
+        ];
 
-    let products = [
-        { name: "Apples", price: 3.50, stock: "Available" },
-        { name: "Milk", price: 2.00, stock: "Available" }
-    ];
-    
-    // PAGE SWITCH
-    function show(page) {
-        document.getElementById("home").classList.add("hidden");
-        document.getElementById("products").classList.add("hidden");
-    
-        document.getElementById(page).classList.remove("hidden");
-    
-        if (page === "products") {
-            displayProducts(products);
-        }
-    }
-    
+        // Page switch function
+        function show(page) {
+            document.getElementById("home").classList.add("hidden");
+            document.getElementById("products").classList.add("hidden");
+            document.getElementById("dashboard").classList.add("hidden");
 
-    function displayProducts(list) {
-        let output = "";
-    
-        if (list.length === 0) {
-            document.getElementById("noResults").classList.remove("hidden");
-            document.getElementById("productList").innerHTML = "";
-            return;
+            document.getElementById(page).classList.remove("hidden");
+
+            if (page === "products") {
+                displayProducts(products);
+            } else if (page === "dashboard") {
+                displayStock(products);
+            }
         }
-    
-        document.getElementById("noResults").classList.add("hidden");
-    
-        list.forEach(p => {
-            output += `
-            <div class="card">
-                <div class="image-box"></div>
-                <p>${p.name}</p>
-                <p>Price: £${p.price}</p>
-                <p>Stock: ${p.stock}</p>
-                <button>Add to Cart</button>
-            </div>
-            `;
-        });
-    
-        document.getElementById("productList").innerHTML = output;
-    }
-    
- 
-    function search() {
-        let query = document.getElementById("searchBox").value.toLowerCase();
-    
-        let filtered = products.filter(p =>
-            p.name.toLowerCase().includes(query)
-        );
-    
-        displayProducts(filtered);
-    }
-    
+
+        // Display products in the dashboard
+        function displayStock(list) {
+            let output = "";
+            list.forEach((p, index) => {
+                output += `
+                <div class="card">
+                    <p>${p.name}</p>
+                    <p>Price: £${p.price}</p>
+                    <p>Stock: ${p.stock}</p>
+                    <button onclick="removeProduct(${index})">Remove</button>
+                </div>
+                `;
+            });
+            document.getElementById("stockList").innerHTML = output;
+        }
+
+        // Add a new product
+        function addProduct() {
+            const name = document.getElementById("newProductName").value;
+            const price = parseFloat(document.getElementById("newProductPrice").value);
+            const stock = document.getElementById("newProductStock").value;
+
+            if (name && price) {
+                products.push({ name, price, stock });
+                displayStock(products);
+                document.getElementById("addProductForm").reset();
+            } else {
+                alert("Please fill in all fields.");
+            }
+        }
+
+        // Remove a product
+        function removeProduct(index) {
+            products.splice(index, 1);
+            displayStock(products);
+        }
     </script>
+
+</body>
     
     </body>
     </html>
