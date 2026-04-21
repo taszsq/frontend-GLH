@@ -5,12 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        /* Accessibility and Design Enhancements */
+      
         body {
             margin: 0;
             font-family: Arial, sans-serif;
             display: flex;
-            background-color: #f9f9f9; /* Beige background */
+            background-color: #f9f9f9;
         }
 
         .sidebar {
@@ -23,11 +23,11 @@
         .sidebar p {
             margin: 15px 0;
             cursor: pointer;
-            color: #006400; /* Green text */
+            color: #006400; 
         }
 
         .sidebar p:hover {
-            color: #ff69b4; /* Pink hover effect */
+            color: #ff69b4; 
         }
 
         .main {
@@ -38,7 +38,7 @@
         .product-grid {
             display: flex;
             gap: 20px;
-            flex-wrap: wrap; /* Fill the page more */
+            flex-wrap: wrap; 
         }
 
         .card {
@@ -51,7 +51,7 @@
         }
 
         .card:hover {
-            background: #ffebcd; /* Light beige hover effect */
+            background: #ffebcd;
         }
 
         .footer {
@@ -68,80 +68,123 @@
         }
 
         .dashboard {
-            background: #f0fff0; /* Light green background */
+            background: #f0fff0; 
             padding: 20px;
             border-radius: 5px;
         }
     </style>
 </head>
-
 <body>
 
     <div class="sidebar">
         <p onclick="show('home')">Home</p>
-        <p onclick="show('products')">Product</p>
-        <p onclick="show('dashboard')">Dashboard</p>
-        <p onclick="show('login')">Login</p> <!-- Added Login link -->
-        <p onclick="show('cart')">Cart</p> <!-- Added Cart link -->
+        <p onclick="show('products')">Products</p>
+        <p onclick="show('dashboard')">Producer Dashboard</p>
+        <p onclick="show('register')">Register</p>
+        <p onclick="show('login')">Login</p>
+        <p onclick="show('cart')">Cart</p>
+        <p onclick="show('orders')">Order History</p>
+        <p onclick="show('tracking')">Track Orders</p>
     </div>
 
     <div class="main">
 
         <!-- Home Section -->
         <div id="home">
-            <h1>Welcome To Greenfield Local Hub</h1>
+            <h1 style="color: #006400;">Welcome To Greenfield Local Hub</h1>
             <p>Buy fresh local food and support local farmers</p>
-            <button onclick="show('products')">Browse Products</button>
+            <button style="background-color: #ff69b4; color: white;" onclick="show('products')">Browse Products</button>
         </div>
 
         <!-- Products Section -->
         <div id="products" class="hidden">
-            <h3>Product List</h3>
+            <h3 style="color: #006400;">Product List</h3>
             <div id="productList" class="product-grid"></div>
         </div>
 
-        <!-- Dashboard Section -->
+        <!-- Producer Dashboard Section -->
         <div id="dashboard" class="hidden">
-            <h1>Producer Dashboard</h1>
+            <h1 style="color: #006400;">Producer Dashboard</h1>
             <p>Manage stock levels, update product details, and view orders.</p>
+            <div id="stockList" class="product-grid"></div>
+            <h3>Add New Product</h3>
+            <form id="addProductForm">
+                <input type="text" id="newProductName" placeholder="Product Name" required>
+                <input type="number" id="newProductPrice" placeholder="Price (£)" required>
+                <button style="background-color: #ff69b4; color: white;" type="button" onclick="addProduct()">Add Product</button>
+            </form>
+        </div>
+
+        <!-- Registration Section -->
+        <div id="register" class="hidden">
+            <h1 style="color: #006400;">Register</h1>
+            <form id="registerForm">
+                <input type="text" id="regUsername" placeholder="Username" required>
+                <input type="password" id="regPassword" placeholder="Password" required>
+                <button style="background-color: #ff69b4; color: white;" type="button" onclick="register()">Register</button>
+            </form>
+            <p id="registerMessage"></p>
         </div>
 
         <!-- Login Section -->
         <div id="login" class="hidden">
-            <h1>Login</h1>
+            <h1 style="color: #006400;">Login</h1>
             <form id="loginForm">
                 <input type="text" id="username" placeholder="Username" required>
                 <input type="password" id="password" placeholder="Password" required>
-                <button type="button" onclick="login()">Login</button>
+                <button style="background-color: #ff69b4; color: white;" type="button" onclick="login()">Login</button>
             </form>
             <p id="loginMessage"></p>
         </div>
 
         <!-- Cart Section -->
         <div id="cart" class="hidden">
-            <h1>Your Cart</h1>
+            <h1 style="color: #006400;">Your Cart</h1>
             <div id="cartList" class="product-grid"></div>
             <h3>Total: £<span id="cartTotal">0.00</span></h3>
+            <h3>Checkout Details</h3>
+            <form id="checkoutForm">
+                <input type="text" id="customerName" placeholder="Name" required>
+                <input type="text" id="customerAddress" placeholder="Address" required>
+                <input type="text" id="cardDetails" placeholder="Card Details" required>
+                <button style="background-color: #ff69b4; color: white;" type="button" onclick="checkout()">Complete Purchase</button>
+            </form>
+        </div>
+
+        <!-- Order History Section -->
+        <div id="orders" class="hidden">
+            <h1 style="color: #006400;">Order History</h1>
+            <div id="orderHistory" class="product-grid"></div>
+        </div>
+
+        <!-- Order Tracking Section -->
+        <div id="tracking" class="hidden">
+            <h1 style="color: #006400;">Track Your Orders</h1>
+            <p>Enter your order number to track:</p>
+            <input type="text" id="orderNumber" placeholder="Order Number">
+            <button style="background-color: #ff69b4; color: white;" onclick="trackOrder()">Track</button>
+            <p id="trackingResult"></p>
         </div>
 
     </div>
 
-    <div class="footer">
+    <div class="footer" style="background-color: #006400; color: white;">
         Contact Us | Accessibility | Privacy Policy
     </div>
 
     <script>
-        // Existing products array
         let products = [
             { name: "Apples", price: 3.50 },
             { name: "Milk", price: 2.00 },
             { name: "Bananas", price: 2.10 }
         ];
 
-        let cart = []; // Cart array
-        let loggedInUser = null; // Logged-in user
+        let cart = [];
+        let loggedInUser = null;
+        let orderHistory = [];
+        let users = [];
+        let producers = [{ username: "producer1", password: "password" }];
 
-        // Page switch function
         function show(page) {
             document.querySelectorAll('.main > div').forEach(div => div.classList.add('hidden'));
             document.getElementById(page).classList.remove('hidden');
@@ -150,10 +193,13 @@
                 displayProducts(products);
             } else if (page === "cart") {
                 displayCart();
+            } else if (page === "orders") {
+                displayOrderHistory();
+            } else if (page === "dashboard") {
+                displayStock(products);
             }
         }
 
-        // Display products
         function displayProducts(list) {
             let output = "";
             list.forEach((p, index) => {
@@ -161,20 +207,18 @@
                 <div class="card">
                     <p>${p.name}</p>
                     <p>Price: £${p.price.toFixed(2)}</p>
-                    <button onclick="addToCart(${index})">Add to Cart</button>
+                    <button style="background-color: #006400; color: white;" onclick="addToCart(${index})">Add to Cart</button>
                 </div>
                 `;
             });
             document.getElementById("productList").innerHTML = output;
         }
 
-        // Add product to cart
         function addToCart(index) {
             cart.push(products[index]);
             alert(`${products[index].name} added to cart!`);
         }
 
-        // Display cart
         function displayCart() {
             let output = "";
             let total = 0;
@@ -183,7 +227,7 @@
                 <div class="card">
                     <p>${item.name}</p>
                     <p>Price: £${item.price.toFixed(2)}</p>
-                    <button onclick="removeFromCart(${index})">Remove</button>
+                    <button style="background-color: #006400; color: white;" onclick="removeFromCart(${index})">Remove</button>
                 </div>
                 `;
                 total += item.price;
@@ -192,24 +236,124 @@
             document.getElementById("cartTotal").innerText = total.toFixed(2);
         }
 
-        // Remove product from cart
         function removeFromCart(index) {
             cart.splice(index, 1);
             displayCart();
         }
 
-        // Login function
+        function checkout() {
+            if (cart.length === 0) {
+                alert("Your cart is empty!");
+                return;
+            }
+
+            const name = document.getElementById("customerName").value;
+            const address = document.getElementById("customerAddress").value;
+            const card = document.getElementById("cardDetails").value;
+
+            if (!name || !address || !card) {
+                alert("Please fill in all checkout details.");
+                return;
+            }
+
+            orderHistory.push({ name, address, items: [...cart] });
+            alert("Thank you for your purchase!");
+            cart = [];
+            displayCart();
+        }
+
+        function displayOrderHistory() {
+            let output = "";
+            orderHistory.forEach((order, index) => {
+                output += `
+                <div class="card">
+                    <p>Order #${index + 1}</p>
+                    <p>Name: ${order.name}</p>
+                    <p>Address: ${order.address}</p>
+                    <p>Items:</p>
+                    <ul>
+                        ${order.items.map(item => `<li>${item.name} - £${item.price.toFixed(2)}</li>`).join("")}
+                    </ul>
+                </div>
+                `;
+            });
+            document.getElementById("orderHistory").innerHTML = output;
+        }
+
+        function trackOrder() {
+            const orderNumber = parseInt(document.getElementById("orderNumber").value);
+            if (orderNumber > 0 && orderNumber <= orderHistory.length) {
+                const order = orderHistory[orderNumber - 1];
+                document.getElementById("trackingResult").innerText = `Order #${orderNumber} for ${order.name} is being processed.`;
+            } else {
+                document.getElementById("trackingResult").innerText = "Order not found.";
+            }
+        }
+
+        function register() {
+            const username = document.getElementById("regUsername").value;
+            const password = document.getElementById("regPassword").value;
+
+            if (username && password) {
+                users.push({ username, password });
+                document.getElementById("registerMessage").innerText = "Registration successful!";
+                document.getElementById("registerForm").reset();
+            } else {
+                alert("Please fill in all fields.");
+            }
+        }
+
         function login() {
             const username = document.getElementById("username").value;
             const password = document.getElementById("password").value;
 
-            if (username && password) {
+            const user = users.find(u => u.username === username && u.password === password);
+            const producer = producers.find(p => p.username === username && p.password === password);
+
+            if (user) {
                 loggedInUser = username;
                 document.getElementById("loginMessage").innerText = `Welcome, ${username}!`;
                 document.getElementById("loginForm").reset();
+            } else if (producer) {
+                loggedInUser = username;
+                document.getElementById("loginMessage").innerText = `Welcome, Producer ${username}!`;
+                document.getElementById("loginForm").reset();
+                show("dashboard");
             } else {
-                alert("Please enter both username and password.");
+                alert("Invalid login credentials.");
             }
+        }
+
+        function displayStock(list) {
+            let output = "";
+            list.forEach((p, index) => {
+                output += `
+                <div class="card">
+                    <p>${p.name}</p>
+                    <p>Price: £${p.price.toFixed(2)}</p>
+                    <button style="background-color: #ff69b4; color: white;" onclick="removeProduct(${index})">Remove</button>
+                </div>
+                `;
+            });
+            document.getElementById("stockList").innerHTML = output;
+        }
+
+        function addProduct() {
+            const name = document.getElementById("newProductName").value;
+            const price = parseFloat(document.getElementById("newProductPrice").value);
+
+            if (name && price) {
+                products.push({ name, price });
+                displayStock(products);
+                document.getElementById("addProductForm").reset();
+            } else {
+                alert("Please fill in all fields.");
+            }
+        }
+
+        function removeProduct(index) {
+            products.splice(index, 1);
+            displayStock(products);
         }
     </script>
 
